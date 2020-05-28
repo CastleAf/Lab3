@@ -84,6 +84,11 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
+          case 40: {
+
+            available_ = input.readBool();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -221,6 +226,16 @@ private static final long serialVersionUID = 0L;
     return getPrice();
   }
 
+  public static final int AVAILABLE_FIELD_NUMBER = 5;
+  private boolean available_;
+  /**
+   * <code>bool available = 5;</code>
+   * @return The available.
+   */
+  public boolean getAvailable() {
+    return available_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -247,6 +262,9 @@ private static final long serialVersionUID = 0L;
     if (price_ != null) {
       output.writeMessage(4, getPrice());
     }
+    if (available_ != false) {
+      output.writeBool(5, available_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -269,6 +287,10 @@ private static final long serialVersionUID = 0L;
     if (price_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(4, getPrice());
+    }
+    if (available_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(5, available_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -296,6 +318,8 @@ private static final long serialVersionUID = 0L;
       if (!getPrice()
           .equals(other.getPrice())) return false;
     }
+    if (getAvailable()
+        != other.getAvailable()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -317,6 +341,9 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + PRICE_FIELD_NUMBER;
       hash = (53 * hash) + getPrice().hashCode();
     }
+    hash = (37 * hash) + AVAILABLE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getAvailable());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -466,6 +493,8 @@ private static final long serialVersionUID = 0L;
         price_ = null;
         priceBuilder_ = null;
       }
+      available_ = false;
+
       return this;
     }
 
@@ -500,6 +529,7 @@ private static final long serialVersionUID = 0L;
       } else {
         result.price_ = priceBuilder_.build();
       }
+      result.available_ = available_;
       onBuilt();
       return result;
     }
@@ -561,6 +591,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasPrice()) {
         mergePrice(other.getPrice());
+      }
+      if (other.getAvailable() != false) {
+        setAvailable(other.getAvailable());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -890,6 +923,36 @@ private static final long serialVersionUID = 0L;
         price_ = null;
       }
       return priceBuilder_;
+    }
+
+    private boolean available_ ;
+    /**
+     * <code>bool available = 5;</code>
+     * @return The available.
+     */
+    public boolean getAvailable() {
+      return available_;
+    }
+    /**
+     * <code>bool available = 5;</code>
+     * @param value The available to set.
+     * @return This builder for chaining.
+     */
+    public Builder setAvailable(boolean value) {
+      
+      available_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool available = 5;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearAvailable() {
+      
+      available_ = false;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

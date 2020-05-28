@@ -13,6 +13,8 @@ public class Product {
 	private volatile int quantity;
 	/** Price of product */
 	private int price;
+	/** Is available */
+	private boolean available;
 
 	/** Create a new product */
 	public Product(String pid, String description, int quantity, int price) {
@@ -20,6 +22,7 @@ public class Product {
 		this.description = description;
 		this.quantity = quantity;
 		this.price = price;
+		this.available = true;
 	}
 
 	public String getId() {
@@ -32,6 +35,14 @@ public class Product {
 
 	public int getPrice() {
 		return price;
+	}
+
+	public boolean isAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
 	}
 
 	/** Synchronized locks object before returning quantity */
@@ -51,6 +62,7 @@ public class Product {
 		builder.append(", description=").append(description);
 		builder.append(", quantity=").append(quantity);
 		builder.append(", price=").append(price);
+		builder.append(", available=").append(available);
 		builder.append("]");
 		return builder.toString();
 	}

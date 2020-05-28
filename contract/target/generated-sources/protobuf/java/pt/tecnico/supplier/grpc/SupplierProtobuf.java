@@ -49,22 +49,22 @@ public final class SupplierProtobuf {
   static {
     java.lang.String[] descriptorData = {
       "\n\016supplier.proto\022\030pt.tecnico.supplier.gr" +
-      "pc\032\027google/type/money.proto\"g\n\007Product\022\022" +
+      "pc\032\027google/type/money.proto\"z\n\007Product\022\022" +
       "\n\nidentifier\030\001 \001(\t\022\023\n\013description\030\002 \001(\t\022" +
       "\020\n\010quantity\030\003 \001(\005\022!\n\005price\030\004 \001(\0132\022.googl" +
-      "e.type.Money\",\n\tSignature\022\020\n\010signerId\030\001 " +
-      "\001(\t\022\r\n\005value\030\002 \001(\014\"\206\001\n\016SignedResponse\022<\n" +
-      "\010response\030\001 \001(\0132*.pt.tecnico.supplier.gr" +
-      "pc.ProductsResponse\0226\n\tsignature\030\002 \001(\0132#" +
-      ".pt.tecnico.supplier.grpc.Signature\"\021\n\017P" +
-      "roductsRequest\"b\n\020ProductsResponse\022\032\n\022su" +
-      "pplierIdentifier\030\001 \001(\t\0222\n\007product\030\002 \003(\0132" +
-      "!.pt.tecnico.supplier.grpc.Product2o\n\010Su" +
-      "pplier\022c\n\014listProducts\022).pt.tecnico.supp" +
-      "lier.grpc.ProductsRequest\032(.pt.tecnico.s" +
-      "upplier.grpc.SignedResponseB.\n\030pt.tecnic" +
-      "o.supplier.grpcB\020SupplierProtobufP\001b\006pro" +
-      "to3"
+      "e.type.Money\022\021\n\tavailable\030\005 \001(\010\";\n\tSigna" +
+      "ture\022\020\n\010signerId\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\022\r\n" +
+      "\005nonce\030\003 \001(\003\"\206\001\n\016SignedResponse\022<\n\010respo" +
+      "nse\030\001 \001(\0132*.pt.tecnico.supplier.grpc.Pro" +
+      "ductsResponse\0226\n\tsignature\030\002 \001(\0132#.pt.te" +
+      "cnico.supplier.grpc.Signature\"\021\n\017Product" +
+      "sRequest\"b\n\020ProductsResponse\022\032\n\022supplier" +
+      "Identifier\030\001 \001(\t\0222\n\007product\030\002 \003(\0132!.pt.t" +
+      "ecnico.supplier.grpc.Product2o\n\010Supplier" +
+      "\022c\n\014listProducts\022).pt.tecnico.supplier.g" +
+      "rpc.ProductsRequest\032(.pt.tecnico.supplie" +
+      "r.grpc.SignedResponseB.\n\030pt.tecnico.supp" +
+      "lier.grpcB\020SupplierProtobufP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -76,13 +76,13 @@ public final class SupplierProtobuf {
     internal_static_pt_tecnico_supplier_grpc_Product_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_pt_tecnico_supplier_grpc_Product_descriptor,
-        new java.lang.String[] { "Identifier", "Description", "Quantity", "Price", });
+        new java.lang.String[] { "Identifier", "Description", "Quantity", "Price", "Available", });
     internal_static_pt_tecnico_supplier_grpc_Signature_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_pt_tecnico_supplier_grpc_Signature_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_pt_tecnico_supplier_grpc_Signature_descriptor,
-        new java.lang.String[] { "SignerId", "Value", });
+        new java.lang.String[] { "SignerId", "Value", "Nonce", });
     internal_static_pt_tecnico_supplier_grpc_SignedResponse_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_pt_tecnico_supplier_grpc_SignedResponse_fieldAccessorTable = new

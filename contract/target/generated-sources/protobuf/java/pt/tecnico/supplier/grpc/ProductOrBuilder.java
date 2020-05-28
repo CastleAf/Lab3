@@ -51,4 +51,10 @@ public interface ProductOrBuilder extends
    * <code>.google.type.Money price = 4;</code>
    */
   com.google.type.MoneyOrBuilder getPriceOrBuilder();
+
+  /**
+   * <code>bool available = 5;</code>
+   * @return The available.
+   */
+  boolean getAvailable();
 }

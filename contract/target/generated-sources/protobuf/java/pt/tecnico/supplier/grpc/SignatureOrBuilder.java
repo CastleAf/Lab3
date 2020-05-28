@@ -24,4 +24,10 @@ public interface SignatureOrBuilder extends
    * @return The value.
    */
   com.google.protobuf.ByteString getValue();
+
+  /**
+   * <code>int64 nonce = 3;</code>
+   * @return The nonce.
+   */
+  long getNonce();
 }

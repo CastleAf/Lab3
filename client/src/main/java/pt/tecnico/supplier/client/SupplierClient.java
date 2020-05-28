@@ -18,6 +18,7 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.*;
 
 public class SupplierClient {
 
@@ -27,7 +28,9 @@ public class SupplierClient {
 	 */
 	private static final boolean DEBUG_FLAG = (System.getProperty("debug") != null);
 	private static final String DIGEST_ALGO = "SHA-256";
-	private static final String SYM_CIPHER = "AES/CBC/PKCS5Padding";
+	private static final String SYM_CIPHER = "AES/ECB/PKCS5Padding";
+
+	private static Set<Long> nounces = new HashSet<>();
 
 	/** Helper method to print debug messages. */
 	private static void debug(String debugMessage) {
@@ -61,51 +64,55 @@ public class SupplierClient {
 		// Create a blocking stub for making synchronous remote calls.
 		SupplierGrpc.SupplierBlockingStub stub = SupplierGrpc.newBlockingStub(channel);
 
-		// Prepare request.
-		ProductsRequest request = ProductsRequest.newBuilder().build();
-		System.out.println("Request to send:");
-		System.out.println(request.toString());
-		debug("in binary hexadecimals:");
-		byte[] requestBinary = request.toByteArray();
-		debug(printHexBinary(requestBinary));
-		debug(String.format("%d bytes%n", requestBinary.length));
+		for (int i = 0; i < 1; i++) {
 
-		// Make the call using the stub.
-		System.out.println("Remote call...");
-		SignedResponse response = stub.listProducts(request);
 
-		// Redigest and Decipher
-		byte[] iv = new byte[16];	// generate sample AES 16 byte initialization vector
+			// Prepare request.
+			ProductsRequest request = ProductsRequest.newBuilder().build();
+			System.out.println("Request to send:");
+			System.out.println(request.toString());
+			debug("in binary hexadecimals:");
+			byte[] requestBinary = request.toByteArray();
+			debug(printHexBinary(requestBinary));
+			debug(String.format("%d bytes%n", requestBinary.length));
 
-		// let the system pick a strong secure random generator
-		SecureRandom random = SecureRandom.getInstanceStrong();
-		random.nextBytes(iv);
+			// Make the call using the stub.
+			System.out.println("Remote call...");
+			SignedResponse response = stub.listProducts(request);
 
-		Key myKey = readKey("secret.key");
 
-		ByteString myCipheredBytes = response.getSignature().getValue();
-		byte[] cipheredBytes = myCipheredBytes.toByteArray();
+			Key myKey = readKey("secret.key");
 
-		ProductsResponse myProducts = response.getResponse();
-		byte[] responseBytes = myProducts.toByteArray();
+			ByteString myCipheredBytes = response.getSignature().getValue();
+			byte[] cipheredBytes = myCipheredBytes.toByteArray();
 
-		boolean answer = redigestDecipherAndCompare(cipheredBytes, responseBytes, myKey, iv);
+			ProductsResponse myProducts = response.getResponse();
+			byte[] responseBytes = myProducts.toByteArray();
 
-		if (answer)
-			System.out.println("Signature is valid! Message accepted! :)");
-		else {
+			boolean answer = redigestDecipherAndCompare(cipheredBytes, responseBytes, myKey);
 
-			System.out.println("Signature is invalid! Message rejected! :(");
-			channel.shutdownNow();
+			if (answer) {
+				System.out.println("Signature is valid! Message accepted! :)");
+
+				if (nounces.contains(response.getSignature().getNonce())) {
+					System.out.println("Response is not fresh.");
+					System.out.println(nounces);
+				} else {
+					nounces.add(response.getSignature().getNonce());
+					System.out.println(nounces);
+
+					// Print response.
+					System.out.println("Received response:");
+					System.out.println(response.toString());
+					debug("in binary hexadecimals:");
+					byte[] responseBinary = response.toByteArray();
+					debug(printHexBinary(responseBinary));
+					debug(String.format("%d bytes%n", responseBinary.length));
+				}
+			} else
+				System.out.println("Signature is invalid! Message rejected! :(");
+
 		}
-
-		// Print response.
-		System.out.println("Received response:");
-		System.out.println(response.toString());
-		debug("in binary hexadecimals:");
-		byte[] responseBinary = response.toByteArray();
-		debug(printHexBinary(responseBinary));
-		debug(String.format("%d bytes%n", responseBinary.length));
 
 		// A Channel should be shutdown before stopping the process.
 		channel.shutdownNow();
@@ -126,7 +133,7 @@ public class SupplierClient {
 		return keySpec;
 	}
 
-	private static boolean redigestDecipherAndCompare(byte[] cipherDigest, byte[] bytes, Key key, byte[] iv)
+	private static boolean redigestDecipherAndCompare(byte[] cipherDigest, byte[] bytes, Key key)
 			throws Exception {
 
 		// get a message digest object using the specified algorithm
@@ -141,9 +148,8 @@ public class SupplierClient {
 		// get an AES cipher object
 		Cipher cipher = Cipher.getInstance(SYM_CIPHER);
 
-		IvParameterSpec ips = new IvParameterSpec(iv);
 		// decipher digest using the public key
-		cipher.init(Cipher.DECRYPT_MODE, key, ips);
+		cipher.init(Cipher.DECRYPT_MODE, key);
 		byte[] decipheredDigest = cipher.doFinal(cipherDigest);
 		System.out.println("Deciphered Digest:");
 		System.out.println(printHexBinary(decipheredDigest));

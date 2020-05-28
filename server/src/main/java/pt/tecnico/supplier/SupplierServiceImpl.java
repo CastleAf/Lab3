@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 import pt.tecnico.supplier.grpc.SignedResponse;
 import pt.tecnico.supplier.grpc.Signature;
@@ -35,7 +36,7 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 	 */
 	private static final boolean DEBUG_FLAG = (System.getProperty("debug") != null);
 	private static final String DIGEST_ALGO = "SHA-256";
-	private static final String SYM_CIPHER = "AES/CBC/PKCS5Padding";
+	private static final String SYM_CIPHER = "AES/ECB/PKCS5Padding";
 
 	/** Helper method to print debug messages. */
 	private static void debug(String debugMessage) {
@@ -58,6 +59,7 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 		productBuilder.setIdentifier(p.getId());
 		productBuilder.setDescription(p.getDescription());
 		productBuilder.setQuantity(p.getQuantity());
+		productBuilder.setAvailable(p.isAvailable());
 
 		Money.Builder moneyBuilder = Money.newBuilder();
 		moneyBuilder.setCurrencyCode("EUR").setUnits(p.getPrice());
@@ -84,6 +86,7 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 			Product product = buildProductFromProduct(p);
 			responseBuilder.addProduct(product);
 		}
+
 		ProductsResponse response = responseBuilder.build();
 
 		debug("Response to send:");
@@ -93,43 +96,30 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 		debug(printHexBinary(responseBinary));
 		debug(String.format("%d bytes%n", responseBinary.length));
 
-		SignedResponse.Builder aResponse = SignedResponse.newBuilder();
-		aResponse.setResponse(response);
-
-
-		// Digest and Cypher:
-		byte[] iv = new byte[16];	// generate sample AES 16 byte initialization vector
-
-		// let the system pick a strong secure random generator
-		try {
-			SecureRandom random = SecureRandom.getInstanceStrong();
-			random.nextBytes(iv);
-		}
-		catch (java.security.NoSuchAlgorithmException e) {
-			System.out.println("Didn't found that SecureRandom algorithm.");
-		}
-
 		// Read the secret key
 		try {
 			Key myKey = readKey("secret.key");
 
-
 			// Generate Signature Value
-			byte[] cypherDigest = digestAndCipher(responseBinary, myKey, iv);
-			System.out.println("got here");
+			byte[] cypherDigest = digestAndCipher(responseBinary, myKey);
 			ByteString myBytes = ByteString.copyFrom(cypherDigest);
+
+			SignedResponse.Builder aResponse = SignedResponse.newBuilder();
+			aResponse.setResponse(response);
 
 			Signature.Builder signBuilder = Signature.newBuilder();
 			signBuilder.setValue(myBytes);
-			signBuilder.setSignerId("Server Id");            // FIXME: Used this because idk how to calc server id
+			signBuilder.setSignerId("Server Id");
+			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+			signBuilder.setNonce(random.nextLong());
 			Signature mySignature = signBuilder.build();
-
 			aResponse.setSignature(mySignature);
 			SignedResponse myResponse = aResponse.build();
-			System.out.println("Bruhhhh");
+
+			ProductsResponse newResponse = response.toBuilder().setSupplierIdentifier("Wrong").build();
 
 			// send single response back
-			responseObserver.onNext(myResponse);
+			responseObserver.onNext(myResponse.toBuilder().setResponse(newResponse).build());
 			// complete call
 			responseObserver.onCompleted();
 		} catch (java.lang.Exception e) {
@@ -152,7 +142,7 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 		return keySpec;
 	}
 
-	private static byte[] digestAndCipher(byte[] bytes, Key key, byte[] iv) throws Exception {
+	private static byte[] digestAndCipher(byte[] bytes, Key key) throws Exception {
 
 		// get a message digest object using the specified algorithm
 		MessageDigest messageDigest = MessageDigest.getInstance(DIGEST_ALGO);
@@ -166,10 +156,8 @@ public class SupplierServiceImpl extends SupplierGrpc.SupplierImplBase {
 		// get an AES cipher object
 		Cipher cipher = Cipher.getInstance(SYM_CIPHER);
 
-		System.out.println("hre");
-		IvParameterSpec ips = new IvParameterSpec(iv);
 		// encrypt the plain text using the key
-		cipher.init(Cipher.ENCRYPT_MODE, key, ips);
+		cipher.init(Cipher.ENCRYPT_MODE, key);
 		byte[] cipherDigest = cipher.doFinal(digest);
 
 		return cipherDigest;

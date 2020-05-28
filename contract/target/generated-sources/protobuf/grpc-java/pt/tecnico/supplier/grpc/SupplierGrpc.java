@@ -109,7 +109,7 @@ public final class SupplierGrpc {
     /**
      */
     public void listProducts(pt.tecnico.supplier.grpc.ProductsRequest request,
-        io.grpc.stub.StreamObserver<pt.tecnico.supplier.grpc.SignedResponse> responseObserver) throws Exception {
+        io.grpc.stub.StreamObserver<pt.tecnico.supplier.grpc.SignedResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getListProductsMethod(), responseObserver);
     }
 

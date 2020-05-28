@@ -61,6 +61,11 @@ private static final long serialVersionUID = 0L;
             value_ = input.readBytes();
             break;
           }
+          case 24: {
+
+            nonce_ = input.readInt64();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -139,6 +144,16 @@ private static final long serialVersionUID = 0L;
     return value_;
   }
 
+  public static final int NONCE_FIELD_NUMBER = 3;
+  private long nonce_;
+  /**
+   * <code>int64 nonce = 3;</code>
+   * @return The nonce.
+   */
+  public long getNonce() {
+    return nonce_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -159,6 +174,9 @@ private static final long serialVersionUID = 0L;
     if (!value_.isEmpty()) {
       output.writeBytes(2, value_);
     }
+    if (nonce_ != 0L) {
+      output.writeInt64(3, nonce_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -174,6 +192,10 @@ private static final long serialVersionUID = 0L;
     if (!value_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
         .computeBytesSize(2, value_);
+    }
+    if (nonce_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(3, nonce_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -194,6 +216,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getSignerId())) return false;
     if (!getValue()
         .equals(other.getValue())) return false;
+    if (getNonce()
+        != other.getNonce()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -209,6 +233,9 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getSignerId().hashCode();
     hash = (37 * hash) + VALUE_FIELD_NUMBER;
     hash = (53 * hash) + getValue().hashCode();
+    hash = (37 * hash) + NONCE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getNonce());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -346,6 +373,8 @@ private static final long serialVersionUID = 0L;
 
       value_ = com.google.protobuf.ByteString.EMPTY;
 
+      nonce_ = 0L;
+
       return this;
     }
 
@@ -374,6 +403,7 @@ private static final long serialVersionUID = 0L;
       pt.tecnico.supplier.grpc.Signature result = new pt.tecnico.supplier.grpc.Signature(this);
       result.signerId_ = signerId_;
       result.value_ = value_;
+      result.nonce_ = nonce_;
       onBuilt();
       return result;
     }
@@ -428,6 +458,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
         setValue(other.getValue());
+      }
+      if (other.getNonce() != 0L) {
+        setNonce(other.getNonce());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -563,6 +596,36 @@ private static final long serialVersionUID = 0L;
     public Builder clearValue() {
       
       value_ = getDefaultInstance().getValue();
+      onChanged();
+      return this;
+    }
+
+    private long nonce_ ;
+    /**
+     * <code>int64 nonce = 3;</code>
+     * @return The nonce.
+     */
+    public long getNonce() {
+      return nonce_;
+    }
+    /**
+     * <code>int64 nonce = 3;</code>
+     * @param value The nonce to set.
+     * @return This builder for chaining.
+     */
+    public Builder setNonce(long value) {
+      
+      nonce_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int64 nonce = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearNonce() {
+      
+      nonce_ = 0L;
       onChanged();
       return this;
     }
